@@ -9,13 +9,15 @@ exports.seed = function(knex) {
           firstName: 'lucas',
           lastName: 'loureiro',
           email: 'email@email.com', 
-          password: 'senha'
+          password: 'senha', 
+          age: 27
         },
         {
           firstName: 'joao',
           lastName: 'carlos',
           email: 'email1@email.com', 
-          password: 'senha1'
+          password: 'senha1', 
+          age: 18
         }
       ]);
     });

@@ -19,6 +19,12 @@ module.exports = {
             next(error)
         }
     },
+    async getAddressById(req, res) { 
+        const { id } = req.params
+        const results = await knex('addresses').select('addresses.*').where({ id })
+
+        return res.json(results)
+    },
     async create(req, res, next) {
         try {
             const { 
