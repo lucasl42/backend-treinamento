@@ -6,6 +6,12 @@ module.exports = {
 
         return res.json(results)
     },
+    async getUserById(req, res) { 
+        const { id } = req.params
+        const results = await knex('users').select('users.*').where({ id })
+
+        return res.json(results)
+    },
     async create(req, res, next) {
         try {
             const { 
