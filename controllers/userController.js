@@ -13,8 +13,6 @@ module.exports = {
               lastName, 
               email, 
               password } = req.body
-            console.log(firstName)
-            console.log(lastName)
             await knex('users').insert({
               firstName, 
               lastName, 
