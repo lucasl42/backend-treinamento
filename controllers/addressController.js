@@ -1,16 +1,28 @@
 const knex = require('../database')
+const Address = require('../models/address')
 
 module.exports = {
     async index(req, res, next) { 
         try {
-            const { user_id } = req.query;
-            const query = knex('addresses')
+            const query = Address.query()
             
-            if(user_id) {
+            if(req.query.select) {
+                query.select(req.query.select)
+            }
+            
+            if(req.query.user_id) {
                 query
-                .where({ user_id })
-                .join('users', 'users.id', '=', 'addresses.user_id')
-                .select('addresses.*', 'users.firstName')
+                .select('addresses.*', 'users.firstName as owner')
+                .join('users', 'addresses.user_id', 'users.id')
+                .where('addresses.user_id', req.query.user_id)
+            }
+
+            if(req.query.state){
+                query.where('state', req.query.state)
+            }
+
+            if(req.query.country){
+                query.where('firstName', req.query.country)
             }
 
             const results = await query
@@ -20,27 +32,14 @@ module.exports = {
         }
     },
     async getAddressById(req, res) { 
-        const { id } = req.params
-        const results = await knex('addresses').select('addresses.*').where({ id })
+        const results = await Address.query()
+                                    .findById(req.params.id)
 
         return res.json(results)
     },
     async create(req, res, next) {
         try {
-            const { 
-                address, 
-                state, 
-                country, 
-                zipCode, 
-                user_id } = req.body
-
-            await knex('addresses').insert({
-                address, 
-                state, 
-                country, 
-                zipCode, 
-                user_id
-            })
+            await Address.query().insert(req.body)
 
             return res.status(201).send()
         } catch (error) {
@@ -49,23 +48,9 @@ module.exports = {
     },
     async update(req, res, next) {
         try {
-            const { 
-                address, 
-                state, 
-                country, 
-                zipCode, 
-                user_id } = req.body
-            const { id } = req.params
-            
-            
-            await knex('addresses')
-            .update({ 
-                address, 
-                state, 
-                country, 
-                zipCode, 
-                user_id })
-            .where({ id })
+            await Address.query()
+                    .findById(req.params.id)
+                    .patch(req.body)
 
             return res.send()
 
@@ -75,12 +60,7 @@ module.exports = {
     },
     async delete(req, res, next) {
         try {
-            const { id } = req.params
-
-            await knex('addresses')
-            .where({ id })
-            .del()
-            
+            await Address.query().deleteById(req.params.id)
 
             return res.send()
         } catch (error) {

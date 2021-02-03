@@ -4,11 +4,11 @@ var router = express.Router();
 const addressController = require('../controllers/addressController')
 
 router
-  .get('/addresses', addressController.index)
-  .get('/addresses/:id', addressController.getAddressById)
-  .post('/addresses', addressController.create)
-  .put('/addresses/:id', addressController.update)
-  .delete('/addresses/:id', addressController.delete)
+  .get('/address', addressController.index)
+  .get('/address/:id', addressController.getAddressById)
+  .post('/address', addressController.create)
+  .put('/address/:id', addressController.update)
+  .delete('/address/:id', addressController.delete)
 
 
 module.exports = router;
