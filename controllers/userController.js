@@ -1,4 +1,5 @@
 const User = require('../models/user')
+const bcrypt = require('bcrypt')
 
 module.exports = {
 
@@ -36,6 +37,9 @@ module.exports = {
     },
     async create(req, res, next) {
         try {
+            const salt = await bcrypt.genSaltSync();
+            const hash = await bcrypt.hashSync(req.body.password, salt);            
+            req.body.password = hash
             await User.query().insert(req.body)
 
             return res.status(201).send()
@@ -45,6 +49,11 @@ module.exports = {
     },
     async update(req, res, next) {
         try {
+            if(req.body.password) {
+                const salt = await bcrypt.genSaltSync();
+                const hash = await bcrypt.hashSync(req.body.password, salt);            
+                req.body.password = hash                
+            }
             await User.query()
                     .findById(req.params.id)
                     .patch(req.body)
