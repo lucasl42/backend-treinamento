@@ -30,26 +30,14 @@ module.exports = {
         return res.json(results)
     },
     async getUserById(req, res) { 
-        const { id } = req.params
-        const results = await knex('users').select('users.*').where({ id })
-
+        const results = await User.query()
+                                .findById(req.params.id)
+                                .withGraphFetched('addresses')
         return res.json(results)
     },
     async create(req, res, next) {
         try {
-            const { 
-                firstName, 
-                lastName, 
-                email, 
-                password, 
-                age } = req.body
-            await knex('users').insert({
-              firstName, 
-              lastName, 
-              email, 
-              password, 
-              age
-            })
+            await User.query().insert(req.body)
 
             return res.status(201).send()
         } catch (error) {
@@ -58,23 +46,9 @@ module.exports = {
     },
     async update(req, res, next) {
         try {
-            const { 
-              firstName, 
-              lastName, 
-              email, 
-              password, 
-              age } = req.body
-            const { id } = req.params
-            
-            
-            await knex('users')
-            .update({ 
-              firstName, 
-              lastName, 
-              email, 
-              password, 
-              age })
-            .where({ id })
+            await User.query()
+                    .findById(req.params.id)
+                    .patch(req.body)
 
             return res.send()
 
@@ -84,11 +58,7 @@ module.exports = {
     },
     async delete(req, res, next) {
         try {
-            const { id } = req.params
-
-            await knex('users')
-            .where({ id })
-            .del()
+            await User.query().deleteById(req.params.id)
             
 
             return res.send()
