@@ -1,4 +1,5 @@
 const Address = require('../models/address')
+const User = require('../models/user')
 
 module.exports = {
     async index(req, res, next) { 
@@ -32,19 +33,36 @@ module.exports = {
     },
     async getAddressById(req, res, next) { 
         try {
-            const results = await Address.query()
+            const address = await Address.query()
                                     .findById(req.params.id)
 
-            return res.json(results)
+            if(address) {
+                return res.json(results)
+            } else {
+                const error = new Error('Address not found')
+                error.status = 404
+                throw error
+            }
+            
         } catch (error) {
             next(error)
         }
     },
     async create(req, res, next) {
         try {
-            await Address.query().insert(req.body)
+            const user = await User.query()
+                                    .findById(req.body.user_id)
 
-            return res.status(201).send()
+            if(user){
+                await Address.query().insert(req.body)
+
+                return res.status(201).send()
+            }else {
+                const error = new Error('No user for this address')
+                error.status = 404
+                throw error
+            }
+            
         } catch (error) {
             next(error)
         }

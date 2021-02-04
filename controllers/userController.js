@@ -35,10 +35,18 @@ module.exports = {
     },
     async getUserById(req, res, next) { 
         try {
-            const results = await User.query()
+            const user = await User.query()
                                     .findById(req.params.id)
                                     .withGraphFetched('addresses')
-            return res.json(results)            
+
+            if(user){
+                return res.json(user)
+            }else {
+                const error = new Error('User not found')
+                error.status = 404
+                throw error
+            }
+                        
         } catch (error) {
             next(error)
         }

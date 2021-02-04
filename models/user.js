@@ -1,3 +1,4 @@
+const knex = require('../database')
 const { Model } = require('objection')
 
 class User extends Model {
