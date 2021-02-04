@@ -3,42 +3,50 @@ const bcrypt = require('bcrypt')
 
 module.exports = {
 
-    async index(req, res) { 
-        const query = User.query()
+    async index(req, res, next) { 
+        try {
+            const query = User.query()
 
-        if(req.query.select) {
-            query.select(req.query.select)
+            if(req.query.select) {
+                query.select(req.query.select)
+            }
+    
+            if(req.query.firstName){
+                query.where('firstName', req.query.firstName)
+            }
+    
+            if(req.query.lastName){
+                query.where('lastName', req.query.lastName)
+            }
+    
+            if(req.query.email){
+                query.where('email', req.query.email)
+            }
+    
+            if(req.query.age){
+                query.where('age', req.query.age)
+            }
+    
+            const results = await query
+            return res.json(results)            
+        } catch (error) {
+            next(error)
         }
-
-        if(req.query.firstName){
-            query.where('firstName', req.query.firstName)
-        }
-
-        if(req.query.lastName){
-            query.where('lastName', req.query.lastName)
-        }
-
-        if(req.query.email){
-            query.where('email', req.query.email)
-        }
-
-        if(req.query.age){
-            query.where('age', req.query.age)
-        }
-
-        const results = await query
-        return res.json(results)
     },
-    async getUserById(req, res) { 
-        const results = await User.query()
-                                .findById(req.params.id)
-                                .withGraphFetched('addresses')
-        return res.json(results)
+    async getUserById(req, res, next) { 
+        try {
+            const results = await User.query()
+                                    .findById(req.params.id)
+                                    .withGraphFetched('addresses')
+            return res.json(results)            
+        } catch (error) {
+            next(error)
+        }
     },
     async create(req, res, next) {
         try {
-            const salt = await bcrypt.genSaltSync();
-            const hash = await bcrypt.hashSync(req.body.password, salt);            
+            const salt = await bcrypt.genSalt();
+            const hash = await bcrypt.hash(req.body.password, salt);            
             req.body.password = hash
             await User.query().insert(req.body)
 
@@ -50,8 +58,8 @@ module.exports = {
     async update(req, res, next) {
         try {
             if(req.body.password) {
-                const salt = await bcrypt.genSaltSync();
-                const hash = await bcrypt.hashSync(req.body.password, salt);            
+                const salt = await bcrypt.genSalt();
+                const hash = await bcrypt.hash(req.body.password, salt);            
                 req.body.password = hash                
             }
             await User.query()

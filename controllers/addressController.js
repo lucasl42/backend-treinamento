@@ -1,4 +1,3 @@
-const knex = require('../database')
 const Address = require('../models/address')
 
 module.exports = {
@@ -31,11 +30,15 @@ module.exports = {
             next(error)
         }
     },
-    async getAddressById(req, res) { 
-        const results = await Address.query()
+    async getAddressById(req, res, next) { 
+        try {
+            const results = await Address.query()
                                     .findById(req.params.id)
 
-        return res.json(results)
+            return res.json(results)
+        } catch (error) {
+            next(error)
+        }
     },
     async create(req, res, next) {
         try {
