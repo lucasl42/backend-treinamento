@@ -93,7 +93,7 @@ module.exports = {
     },
     async delete(req, res, next) {
         try {
-            const user = User.query.findById(req.params.id)
+            const user = User.query().findById(req.params.id)
             if(user) {
                 await User.query().deleteById(req.params.id)
 
