@@ -76,11 +76,11 @@ module.exports = {
     },
     async update(req, res, next) {
         try {
-            if(req.body.password) {
-                const salt = await bcrypt.genSalt();
-                const hash = await bcrypt.hash(req.body.password, salt);            
-                req.body.password = hash                
-            }
+            const { error } = await userSchema.validate(req.body)
+            if(error) throw error
+            const salt = await bcrypt.genSalt();
+            const hash = await bcrypt.hash(req.body.password, salt);            
+            req.body.password = hash                
             await User.query()
                     .findById(req.params.id)
                     .patch(req.body)

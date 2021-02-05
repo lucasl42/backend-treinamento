@@ -71,6 +71,8 @@ module.exports = {
     },
     async update(req, res, next) {
         try {
+            const { error } = await addressSchema.validate(req.body)
+            if(error) throw error
             await Address.query()
                     .findById(req.params.id)
                     .patch(req.body)
