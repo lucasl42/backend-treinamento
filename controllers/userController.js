@@ -1,4 +1,4 @@
-const User = require('../models/user')
+const { User, userSchema } = require('../models/user')
 const bcrypt = require('bcrypt')
 
 module.exports = {
@@ -53,12 +53,23 @@ module.exports = {
     },
     async create(req, res, next) {
         try {
-            const salt = await bcrypt.genSalt();
-            const hash = await bcrypt.hash(req.body.password, salt);            
-            req.body.password = hash
-            await User.query().insert(req.body)
-
-            return res.status(201).send()
+            const { error } = await userSchema.validate(req.body)
+            if(error) throw error
+            const user = User.query().where('email', req.body.email)
+            if(user){
+                const error = new Error('E-mail already registered')
+                error.status = 400
+                throw error
+            }else {
+                const salt = await bcrypt.genSalt();
+                const hash = await bcrypt.hash(req.body.password, salt);            
+                req.body.password = hash
+                await User.query().insert(req.body)
+    
+                return res.status(201).send()
+            }
+            
+            
         } catch (error) {
             next(error)
         }
@@ -82,10 +93,17 @@ module.exports = {
     },
     async delete(req, res, next) {
         try {
-            await User.query().deleteById(req.params.id)
-            
+            const user = User.query.findById(req.params.id)
+            if(user) {
+                await User.query().deleteById(req.params.id)
 
-            return res.send()
+                return res.send()
+            }else {
+                const error = new Error('User not found')
+                error.status = 404
+                throw error
+            }
+            
         } catch (error) {
             next(error)
         }

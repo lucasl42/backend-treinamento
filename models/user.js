@@ -1,5 +1,6 @@
-const knex = require('../database')
 const { Model } = require('objection')
+const Joi = require('joi')
+const passwordComplexity  = require('joi-password-complexity').default
 
 class User extends Model {
   static get tableName() {
@@ -22,4 +23,21 @@ class User extends Model {
   }
 }
 
-module.exports = User
+const userSchema = Joi.object({
+  firstName: Joi.string()
+    .required(), 
+
+  lastName: Joi.string()
+    .required(), 
+
+  email: Joi.string()
+    .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }), 
+
+  password: passwordComplexity(), 
+
+  age: Joi.number()
+    
+})
+
+module.exports.User = User
+module.exports.userSchema = userSchema
