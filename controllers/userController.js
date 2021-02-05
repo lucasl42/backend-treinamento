@@ -55,8 +55,8 @@ module.exports = {
         try {
             const { error } = await userSchema.validate(req.body)
             if(error) throw error
-            const user = User.query().where('email', req.body.email)
-            if(user){
+            const user = await User.query().where('email', req.body.email)
+            if(user.email){
                 const error = new Error('E-mail already registered')
                 error.status = 400
                 throw error

@@ -31,11 +31,15 @@ const userSchema = Joi.object({
     .required(), 
 
   email: Joi.string()
-    .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }), 
+    .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
+    .required(), 
 
-  password: passwordComplexity(), 
+  password: passwordComplexity().required(), 
 
   age: Joi.number()
+    .integer()
+    .positive()
+    .required()
     
 })
 
