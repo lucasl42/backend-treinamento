@@ -1,5 +1,5 @@
-const Address = require('../models/address')
-const User = require('../models/user')
+const { Address, addressSchema } = require('../models/address')
+const { User } = require('../models/user')
 
 module.exports = {
     async index(req, res, next) { 
@@ -37,7 +37,7 @@ module.exports = {
                                     .findById(req.params.id)
 
             if(address) {
-                return res.json(results)
+                return res.json(address)
             } else {
                 const error = new Error('Address not found')
                 error.status = 404
@@ -50,6 +50,8 @@ module.exports = {
     },
     async create(req, res, next) {
         try {
+            const { error } = await addressSchema.validate(req.body)
+            if(error) throw error
             const user = await User.query()
                                     .findById(req.body.user_id)
 

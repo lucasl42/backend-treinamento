@@ -8,7 +8,7 @@ class User extends Model {
   }
 
   static get relationMappings() {
-    const Address = require('./address')
+    const { Address } = require('./address')
 
     return {
       addresses: {
